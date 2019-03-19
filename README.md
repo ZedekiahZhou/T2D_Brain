@@ -14,17 +14,17 @@ Codes for the program: GTEx and Type 2 diabetes
 
 ## Code comments
 
-| Name                        | Comments                                |
-| --------------------------- | --------------------------------------- |
-| 1_pre_sam_info.R            | Filter the samples                      |
-| 2_tissue_data.sh            | Extract counts for each brain regions   |
-| 3_matchit_optimal_outlier.R | Match the samples using optimal methods |
-|                             |                                         |
-|                             |                                         |
-|                             |                                         |
-|                             |                                         |
-|                             |                                         |
-|                             |                                         |
+| Name                        | Comments                                               |
+| --------------------------- | ------------------------------------------------------ |
+| 1_pre_sam_info.R            | Filter the samples                                     |
+| 2_tissue_data.sh            | Extract counts for each brain regions                  |
+| 3_matchit_optimal_outlier.R | Match the samples using optimal methods                |
+| 4.1_Find_DG_opt.R           | Identified differentially expressed genes using DESeq2 |
+|                             |                                                        |
+|                             |                                                        |
+|                             |                                                        |
+|                             |                                                        |
+|                             |                                                        |
 
 
 
