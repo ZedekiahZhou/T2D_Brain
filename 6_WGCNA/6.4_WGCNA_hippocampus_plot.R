@@ -1,12 +1,14 @@
 library(WGCNA)
 rm(list=ls())
+library(extrafont)
+loadfonts()
 setwd("/data/MyProgram/Final_diabrain/4.plots/WGCNA_Hippocampus/")
 options(stringsAsFactors = FALSE)
-tmp <- load("/data/MyProgram/Final_diabrain/7.scripts/6_WGCNA/Brain_Hippocampus_covar_WGCNAres_v1.0.RData")
-bw_label2color <- read.table("/data/MyProgram/Final_diabrain/7.scripts/6_WGCNA/Brain_Hippocampus_bw_label2color.txt", header = T)
+tmp <- load("/data/MyProgram/Final_diabrain/7.interdata/6_WGCNA/Brain_Hippocampus_covar_WGCNAres_v1.0.RData")
+bw_label2color <- read.table("/data/MyProgram/Final_diabrain/7.interdata/6_WGCNA/Brain_Hippocampus_bw_label2color.txt", header = T)
 id2symbol <- read.table("/data/MyProgram/Final_diabrain/1.clean/id2symbol.tab", header = T)
 mytissue <- "Hippocampus"
-cutoff <- 0.01
+cutoff <- 0.05
 
 ttestpvalue <- function(x, bi_var) {
     tmp <- cbind(vx = x, vbi = bi_var)
@@ -21,25 +23,29 @@ MEs <- MEs[, colnames(MEs)!="MEgrey"]
 MEs <- orderMEs(MEs)
 bwmoduleTraitCor <- cor(MEs, datTraits, use="p")
 bwmoduleTraitPvalue <- corPvalueStudent(bwmoduleTraitCor, nSamples)
+
+# nominal_p <- sapply(MEs, ttestpvalue, datTraits$DIABETES)
 bwmoduleTraitPvalue[, "DIABETES"] <- sapply(MEs, ttestpvalue, datTraits$DIABETES)
 diab_padj <- p.adjust(bwmoduleTraitPvalue[, "DIABETES"], method = "BH")
 
 
 
 textMatrix <- paste(signif(bwmoduleTraitCor, 2), "\n(", signif(bwmoduleTraitPvalue, 1), ")", sep = "")
+
 dim(textMatrix) <- dim(bwmoduleTraitCor)
 #sizeGrWindow(7, 6)
 labeledHeatmap(Matrix = bwmoduleTraitCor, xLabels = colnames(bwmoduleTraitCor), 
                yLabels = rownames(bwmoduleTraitCor), ySymbols = rownames(bwmoduleTraitCor),
                colorLabels = FALSE, colors = blueWhiteRed(50), textMatrix = textMatrix, setStdMargins = F, 
                cex.text = 0.5, zlim = c(-1,1))
-pdf(paste0("./Module_Trait_", mytissue, ".pdf"), width = 5, height = 12)
-par(mar = c(6, 10, 3, 3))
-labeledHeatmap(Matrix = bwmoduleTraitCor[, "DIABETES", drop = FALSE], xLabels = "DIABETES", xLabelsAngle = 0, xLabelsAdj = 0.5, 
+pdf(paste0("./Module_Trait_", mytissue, ".pdf"), family = "Arial", width = 4, height = 12)
+par(mar = c(2, 10, 2, 2), ps = 10)
+labeledHeatmap(Matrix = bwmoduleTraitCor[, "DIABETES", drop = FALSE], xLabels = "T2D", xLabelsAngle = 0, xLabelsAdj = 0.5, 
                yLabels = rownames(bwmoduleTraitCor), ySymbols = rownames(bwmoduleTraitCor), 
                colorLabels = FALSE, colors = blueWhiteRed(50), textMatrix = textMatrix[, 6], setStdMargins = F, 
-               cex.text = 0.6, cex.lab = 1.0, zlim = c(-1,1))
+               cex.text = 0.7, cex.lab = 1.0, zlim = c(-1,1))
 dev.off()
+# embed_fonts(paste0("/data/MyProgram/Final_diabrain/4.plots/WGCNA_Hippocampus/Module_Trait_", mytissue, ".pdf"))
 cor_mods <- sub("^ME", "", rownames(bwmoduleTraitPvalue[bwmoduleTraitPvalue[, "DIABETES"] < cutoff, ]))
 
 # generate a summary table
@@ -72,7 +78,7 @@ geneTraitSignificance <- as.data.frame(cor(datExpr, diab, use = "p"))
 names(geneTraitSignificance) <- paste("GS.", names(diab), sep = "")
 # names(GSPvalue) <- paste("p.GS.", names(diab), sep = "")
 
-pdf("./GSvsMM_all_mod.pdf", width = 9, height = 9)
+pdf("./GSvsMM_all_mod.pdf", family = "Arial", width = 9, height = 9)
 for (module in modNames) {
     column <- match(module, modNames)
     moduleGenes <- bwnetColors==module
@@ -80,29 +86,34 @@ for (module in modNames) {
     verboseScatterplot(abs(geneModuleMembership[moduleGenes, column]),
                        abs(geneTraitSignificance[moduleGenes, 1]),
                        xlab = paste("Module Membership in", module, "module"),
-                       ylab = "Gene significance for body weight",
-                       main = paste("Module membership vs. gene significance\n"),
+                       ylab = "Gene significance for T2D",
+                       main = paste("Gene significance vs module membership\n"),
                        abline = TRUE, abline.color = module, 
                        cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, col = module)
 }
 dev.off()
+# embed_fonts("/data/MyProgram/Final_diabrain/4.plots/WGCNA_Hippocampus/GSvsMM_all_mod.pdf")
 
-cor_mods <- names(diab_padj)[diab_padj < 0.05]
-cor_mods <- gsub("ME", "", cor_mods)
-pdf("./GSvsMM_interest_mod.pdf", width = 9, height = 18)
-par(mfrow = c(4,2))
+# cor_mods <- names(diab_padj)[diab_padj < 0.05]
+# cor_mods <- gsub("ME", "", cor_mods)
+pdf("./GSvsMM_interest_mod.pdf", width = 9, height = 12, family = "Arial")
+layout(matrix(c(1:12), 4, 3, byrow = T))
+par(mar = c(5, 5, 4, 2), oma = c(0,1,3,0), ps = 10)
+# par(mfrow = c(4,3), oma = c(0, 1, 3, 0), ps = 9)
 for (module in cor_mods) {
     column <- match(module, modNames)
     moduleGenes <- bwnetColors==module
     verboseScatterplot(abs(geneModuleMembership[moduleGenes, column]),
                        abs(geneTraitSignificance[moduleGenes, 1]),
-                       xlab = paste("Module Membership in", module, "module"),
-                       ylab = "Gene significance for body weight",
-                       main = paste("Module membership vs. gene significance\n"),
+                       xlab = paste("MM in", module, "module"),
+                       ylab = "GS for T2D",
+                       # main = paste("Module membership vs. gene significance\n"),
                        abline = TRUE, abline.color = module, 
-                       cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, col = module)
+                       cex.main = 1.5, cex.lab = 1.5, cex.axis = 1.5, col = module)
 }
+mtext(expression(bold("Gene significance vs. module membership")), side = 3, line = 0, outer = T, cex = 1)
 dev.off()
+# embed_fonts("/data/MyProgram/Final_diabrain/4.plots/WGCNA_Hippocampus/GSvsMM_interest_mod.pdf")
 
 # generate a summary table
 mm <- cbind(Gene = rownames(geneModuleMembership), geneModuleMembership)
@@ -115,6 +126,11 @@ gm_and_mm <- gm_and_mm[order(gm_and_mm$Module), ]
 gm_and_mm$Gene <- id2symbol$Description[match(gm_and_mm$Gene, id2symbol$Name)]
 write.table(gm_and_mm, "./GS_and_MM.txt", sep = "\t", quote = F, row.names = F)
 
-pdf("./GS_across_module.pdf", width = 40, height = 30)
-plotModuleSignificance(geneTraitSignificance[[1]], bwnetColors, cex.axis = 0.2)
+#-------------------------------------------------------------------------------------------------------------
+# III. plot GS across module
+#-------------------------------------------------------------------------------------------------------------
+pdf("./GS_across_module.pdf", family = "Arial", width = 12, height = 8)
+par(oma = c(1, 1, 1, 1), ps = 15)
+plotModuleSignificance(geneTraitSignificance[[1]], bwnetColors, xaxt= "n")
 dev.off()
+# embed_fonts("/data/MyProgram/Final_diabrain/4.plots/WGCNA_Hippocampus/GS_across_module.pdf")

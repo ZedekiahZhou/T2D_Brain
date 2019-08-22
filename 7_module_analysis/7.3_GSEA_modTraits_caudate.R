@@ -59,10 +59,13 @@ downgene <- DEgene$Gene[DEgene$log2FoldChange < 0]
 modgene <- split(names(datExpr), f = as.factor(bwnetColors))
 updens <- sapply(modgene, FUN = function(x) {length(intersect(upgene, x))/length(x)})
 downdens <- sapply(modgene, FUN = function(x) {length(intersect(downgene, x))/length(x)})
-todens <- sapply(modgene, FUN = function(x) {length(intersect(togene, x))/length(x)})
+upprop <- sapply(modgene, FUN = function(x) {length(intersect(upgene, x))/length(upgene)})
+downprop <- sapply(modgene, FUN = function(x) {length(intersect(downgene, x))/length(downgene)})
 
 up_mod <- enricher(id2symbol$Description[match(upgene, id2symbol$Name)], TERM2GENE = mod2gene, maxGSSize = 10000, pvalueCutoff = 1, qvalueCutoff = 1)
 down_mod <- enricher(id2symbol$Description[match(downgene, id2symbol$Name)], TERM2GENE = mod2gene, maxGSSize = 10000, pvalueCutoff = 1, qvalueCutoff = 1)
+write.table(up_mod@result, "/data/MyProgram/Final_diabrain/4.plots/WGCNA_Caudate/upmod_enrich.tab", sep = "\t", quote = F, row.names = F)
+write.table(down_mod@result, "/data/MyProgram/Final_diabrain/4.plots/WGCNA_Caudate/downmod_enrich.tab", sep = "\t", quote = F, row.names = F)
 #y <- GSEA(diab_snpgenelist, TERM2GENE = featuretogene,  pvalueCutoff = 1, minGSSize = 0, maxGSSize = 10000)
 
 # Summary
@@ -70,8 +73,9 @@ all(rownames(bwmoduleTraitCor)==rownames(bwmoduleTraitPvalue))
 tmp1 <- data.frame(Name = rownames(bwmoduleTraitCor), diab_cor = bwmoduleTraitCor[, "DIABETES"], 
                   diab_pvalue = bwmoduleTraitPvalue[, "DIABETES"])
 all(names(todens)==names(updens)& names(updens)==names(downdens))
-tmp2 <- data.frame(Name = paste0("ME", names(todens)), parts_in_DE = todens , parts_in_up = updens, part_in_down = downdens)
+tmp2 <- data.frame(Name = paste0("ME", names(todens)), partsofupinmod = upprop, partsofdowninmod = downprop, parts_in_up = updens, part_in_down = downdens)
 mod_summary <- merge(tmp1, tmp2, by = "Name")
+write.table(mod_summary, "/data/MyProgram/Final_diabrain/4.plots/WGCNA_Caudate/mod_summary.tab", row.names = F, sep = "\t", quote = F)
 
 
 

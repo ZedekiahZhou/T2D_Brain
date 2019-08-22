@@ -58,17 +58,17 @@ ggplot(pre_data, aes(x=GeneType, y = ..prop.., group = Regulation, color = Regul
     geom_bar(width = 0.7, position = "dodge") +      # plot groups side by side
     coord_flip() +                 # reverse x and y axis
     scale_y_continuous(labels = percent, expand = c(0, 0)) +    # remove the gab between geom and x axis
-    labs(x="Gene Type",y="Percent")+
-    theme(axis.title.x=element_text(size=13,face="bold"),
-          axis.title.y=element_text(size=13,face="bold"),
-          axis.text=element_text(size=10),
+    labs(x="Gene Type",y="Proportion")+
+    theme(axis.title.x=element_text(size=15,face="bold"),
+          axis.title.y=element_text(size=15,face="bold"),
+          axis.text=element_text(size=12),
           axis.text.y = element_text(face = "bold"),
           legend.title=element_text(size=14,face="bold"),
           legend.text=element_text(face="bold"),
           panel.grid.major  = element_blank(),            # remove backgroud 
           panel.background = element_blank(),             # remove backgroud 
           axis.line=element_line(size = .1, colour="black"),  # add axis
-          strip.text.x=element_text(size=9,face="bold"))
+          strip.text.x=element_text(size=10,face="bold"))
 dev.off()
 
 
@@ -88,22 +88,22 @@ downgene_chr$Percent.Down <- percent(downgene_chr$Freq.Down/sum(downgene_chr$Fre
 total_chr <- merge(upgene_chr, downgene_chr, by = "Chr")
 write.table(total_chr, "/data/MyProgram/Final_diabrain/4.plots/DEGs/Chromosome_distribution.txt", sep = "\t", quote = F, row.names = F)
 
-pdf("/data/MyProgram/Final_diabrain/4.plots/DEGs/Chromosome_distribution.pdf", height = 4, width = 12)
+pdf("/data/MyProgram/Final_diabrain/4.plots/DEGs/Chromosome_distribution.pdf", height = 4, width = 16)
 ggplot(pre_data, aes(x=CHR, y = ..prop.., group = Regulation, color = Regulation, fill = Regulation)) + 
     geom_bar(width = 0.5, position = "dodge") + 
     # coord_flip() + 
-    labs(x="Chromosome",y="Percent")+
+    labs(x="Chromosome",y="Proportion")+
     scale_y_continuous(labels = percent, expand = c(0, 0)) + 
-    theme(axis.title.x=element_text(size=13,face="bold"),
-          axis.title.y=element_text(size=13,face="bold"),
-          axis.text=element_text(size=10),
+    theme(axis.title.x=element_text(size=15,face="bold"),
+          axis.title.y=element_text(size=15,face="bold"),
+          axis.text=element_text(size=12),
           axis.text.x = element_text(face = "bold"),
           legend.title=element_text(size=14,face="bold"),
           legend.text=element_text(face="bold"),
           panel.grid.major  = element_blank(),
           panel.background = element_blank(), 
           axis.line=element_line(size = .1, colour="black"), 
-          strip.text.x=element_text(size=9,face="bold"))
+          strip.text.x=element_text(size=10,face="bold"))
 dev.off()
 
 # ----------------------------------------------------------------------------------------------------
@@ -132,18 +132,18 @@ for (i in 1:length(chr_split)) {
 
 chrdis_df <- data.frame(chr_dist, Gene_Pair, Pair_Type)
 
-pdf("/data/MyProgram/Final_diabrain/4.plots/DEGs/Chromosome_distance.pdf", height = 7, width = 7)
+pdf("/data/MyProgram/Final_diabrain/4.plots/DEGs/Chromosome_distance.pdf", height = 6, width = 8)
 my_comparisons <- list(c("Up-Up", "Down-Down"), c("Up-Up", "Up-Down"), c("Down-Down", "Up-Down"))
 ggplot(chrdis_df, aes(x=Pair_Type, y = chr_dist, fill = Pair_Type)) + 
     geom_violin(adjust = .5) +
     geom_boxplot(width = .1, fill = "black", outlier.color = NA) + 
     stat_summary(fun.y=median, geom="point", fill="white", shape=21, size=2.5) +
-    stat_compare_means(comparisons = my_comparisons, label = "p.signif")+
+    stat_compare_means(comparisons = my_comparisons, label = "p.signif", method = "wilcox.test")+
     # coord_flip() + 
     labs(x="",y="Distance", fill = "") + 
-    theme(axis.title.x=element_text(size=13,face="bold"),
-          axis.title.y=element_text(size=13,face="bold"),
-          axis.text=element_text(size=10),
+    theme(axis.title.x=element_text(size=15,face="bold"),
+          axis.title.y=element_text(size=15,face="bold"),
+          axis.text=element_text(size=12),
           axis.text.x = element_text(face = "bold"),
           legend.title=element_text(size=14,face="bold"),
           legend.text=element_text(face="bold"),
@@ -151,5 +151,18 @@ ggplot(chrdis_df, aes(x=Pair_Type, y = chr_dist, fill = Pair_Type)) +
           panel.grid.major  = element_blank(),
           panel.background = element_blank(), 
           axis.line=element_line(size = .1, colour="black"), 
-          strip.text.x=element_text(size=9,face="bold"))
+          strip.text.x=element_text(size=10,face="bold"))
 dev.off()
+
+uu <- chrdis_df$chr_dist[chrdis_df$Pair_Type=="Up-Up"]
+dd <- chrdis_df$chr_dist[chrdis_df$Pair_Type=="Down-Down"]
+ud <- chrdis_df$chr_dist[chrdis_df$Pair_Type=="Up-Down"]
+
+tmp <- data.frame(Median = sapply(split(chrdis_df, f = chrdis_df$Pair_Type), function(x) {median(x$chr_dist)}), 
+                     Mean = sapply(split(chrdis_df, f = chrdis_df$Pair_Type), function(x) {mean(x$chr_dist)}))
+write.table(tmp, "/data/MyProgram/Final_diabrain/4.plots/DEGs/Chromosome_distance.txt", quote = F, sep = "\t")
+
+tmp <- data.frame(uu.dd = wilcox.test(uu, dd)$p.value, 
+                  uu.ud = wilcox.test(uu, ud)$p.value, 
+                  ud.dd = wilcox.test(ud, dd)$p.value)
+write.table(tmp, "/data/MyProgram/Final_diabrain/4.plots/DEGs/Chromosome_distance_p.txt", quote = F, sep = "\t", row.names = F)

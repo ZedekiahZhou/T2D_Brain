@@ -8,7 +8,7 @@
 
 
 rm(list=ls())
-sink(file = "/data/MyProgram/Final_diabrain/7.scripts/4.1_Find_DG_opt.log")
+sink(file = "/data/MyProgram/Final_diabrain/7.interdata/4.1_Find_DG_opt.log")
 library(DESeq2)
 library(sva)
 library(BiocParallel)
@@ -136,7 +136,9 @@ for (i in 1:length(fname)) {
     resultsNames(tdds)
     #tresLFC05 <- lfcShrink(dds=tdds, coef=length(resultsNames(tdds)), res=tres05, parallel=TRUE) #tresLFC
     
-    #Summary--------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------
+    # Summary
+    # ------------------------------------------------------------------------------------
     genesummary[i, 1] <- sum(tres1$padj < 0.1, na.rm = T)
     genesummary[i, 2] <- sum((tres1$padj < 0.1)&(tres1$log2FoldChange>0), na.rm = T)
     genesummary[i, 3] <- sum((tres1$padj < 0.1)&(tres1$log2FoldChange<0), na.rm = T)

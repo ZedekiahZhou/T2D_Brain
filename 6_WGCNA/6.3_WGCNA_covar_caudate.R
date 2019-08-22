@@ -18,7 +18,7 @@ options(stringsAsFactors = F)
 
 # Use r-log transformed data from DESeq2, covariates such as SEX, AGE, BMI, RIN were also regress out by a linear regression
 tmethod <- "covar_prepare"    
-tpath <- paste0("/data/MyProgram/Final_diabrain/7.scripts/6_WGCNA/", tmethod)
+tpath <- paste0("/data/MyProgram/Final_diabrain/7.interdata/6_WGCNA/", tmethod)
 id2symbol <- read.table("/data/MyProgram/Final_diabrain/1.clean/id2symbol.tab", stringsAsFactors = F, header = T)
 setwd(tpath)
 

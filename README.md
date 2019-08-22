@@ -1,44 +1,24 @@
-# Diabetes
-Codes for the program: GTEx and Type 2 diabetes
+## Summary
 
+This is a collection of scripts for the transcriptomic analysis of different human brain regions in type 2 diabetes (T2D). In this study, we observed prominent difference among transcriptomic profiles of diverse brain regions in T2D. We identified caudate as the brain region most involved in T2D and discovered a caudate-specific gene module  by network methods. Gene expressions of this module were disturbed in T2D and it was enriched with T2D SNPs. Hub genes of these module have also been reported to disregulated in both T2D and neurodegenerative disease. We believe this work might provide help for further studies. 
 
+## Citation
 
-## Sample information
-
-| Number of samples | Total | Control | T2D  |
-| ----------------- | ----- | ------- | ---- |
-| Before match      | 1304  | 1000    | 304  |
-| After match       | 912   | 608     | 304  |
-
-
+A manuscript detailing our work has been accepted by Aging and will be online soon. 
 
 ## Code comments
 
-| Name                        | Comments                                               |
-| --------------------------- | ------------------------------------------------------ |
-| 1_pre_sam_info.R            | Filter the samples                                     |
-| 2_tissue_data.sh            | Extract counts for each brain regions                  |
-| 3_matchit_optimal_outlier.R | Match the samples using optimal methods                |
-| 4.1_Find_DG_opt.R           | Identified differentially expressed genes using DESeq2 |
-|                             |                                                        |
-|                             |                                                        |
-|                             |                                                        |
-|                             |                                                        |
-|                             |                                                        |
+| Name                        | Comments                                                     |
+| --------------------------- | ------------------------------------------------------------ |
+| 1_pre_sam_info.R            | Filter the samples                                           |
+| 2_tissue_data.sh            | Extract counts for each brain regions                        |
+| 3_matchit_optimal_outlier.R | Match the samples using optimal methods                      |
+| 4_DE                        | 1) Identified differentially expressed genes using DESeq2,; <br />2) transformed raw counts to r-log values<br />3) plot the distributions of DAGs |
+| 5_Samplesize                | plot the sample size and sample distribution                 |
+| 6_WGCNA                     | 1) linear regression to regress out uninterested factors<br />2) heatmap<br />3) WGCNA network construction<br />4) WGCNA plot<br />5) module hub genes |
+| 7_module_analysis           | 1) align T2D and height SNPs to nearest genes<br />2) regional specific marker enrichment<br />3) prepare SNP enrichment<br />4) GWAS plot<br />5) GO and KEGG pathway analysis |
 
 
 
 
-
-## Packages version
-
-| Packages        | Version |
-| --------------- | ------- |
-| DESeq2          | 1.22.2  |
-| sva             | 3.30.1  |
-| MatchIt         | 3.0.2   |
-| pSI             | 1.1     |
-| clusterProfiler | 3.10.1  |
-|                 |         |
-|                 |         |
 

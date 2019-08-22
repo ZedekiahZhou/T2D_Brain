@@ -8,7 +8,7 @@
 rm(list=ls())
 library(sva)
 library(DESeq2)
-setwd("/data/MyProgram/Final_diabrain/7.scripts/6_WGCNA/")
+setwd("/data/MyProgram/Final_diabrain/7.interdata/6_WGCNA/")
 dir.create("covar_prepare/")
 
 #-------------------------------------------------------------------------------------------------

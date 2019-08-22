@@ -7,10 +7,13 @@
 
 rm(list=ls())
 library(MatchIt)
+library(extrafont)
+library(RColorBrewer)
+
 fpath <- "/data/MyProgram/Final_diabrain/1.clean/sam_info/"
 setwd(fpath)
-library(RColorBrewer)
-sink("../../7.scripts/3_Matchit_optimal.log")
+
+sink("../../7.interdata/3_Matchit_optimal.log")
 # dir.create("../matched_sam_optimal/")
 # dir.create("../matched_summary/")
 # dir.create("../math_matrix/")
@@ -23,7 +26,8 @@ tname <- sub("_[0-9]+.[A-Za-z]+", "", fname)
 short_name <- sub("Brain_", "", tname)
 short_name <- gsub("_", " ", short_name)
 
-pdf(paste0("../../4.plots/match_plot_optimal/All_tissues.pdf"), height = 15, width = 9)
+loadfonts()
+pdf(paste0("../../4.plots/match_plot_optimal/All_tissues.pdf"), family = "Arial", height = 15, width = 9)
 par(mfcol = c(5, 3))
 
 # -------------------------------------------------------------------------------------
@@ -103,7 +107,7 @@ for (i in 1:length(fname)) {
 }
 
 dev.off()
-
+# embed_fonts("/data/MyProgram/Final_diabrain/4.plots/match_plot_optimal/All_tissues.pdf")
 
 sink()
 
